@@ -122,10 +122,6 @@ int main()
   int server, client, length;
   struct sockaddr_un local, remote;
   char buffer[1024];
-  pthread_t tid_smaller, tid_medium, tid_bigger;
-  pthread_attr_t attr;
-
-  pthread_attr_init(&attr);
 
   // Create socket
   server = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -194,11 +190,17 @@ int main()
   close(client);
   close(server);
 
+  pthread_t tid_smaller, tid_medium, tid_bigger;
+  pthread_attr_t attr;
+
+  pthread_attr_init(&attr);
+
   pthread_create(&tid_smaller, &attr, conveyor_belt_to_smaller_weight, NULL);
-  pthread_join(tid_smaller, NULL);
   pthread_create(&tid_medium, &attr, conveyor_belt_to_medium_weight, NULL);
-  pthread_join(tid_medium, NULL);
   pthread_create(&tid_bigger, &attr, conveyor_belt_to_bigger_weight, NULL);
+
+  pthread_join(tid_smaller, NULL);
+  pthread_join(tid_medium, NULL);
   pthread_join(tid_bigger, NULL);
 
   list_delete();
