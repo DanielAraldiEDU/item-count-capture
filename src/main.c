@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <time.h>
 #include <unistd.h>
+// Pipe - Socket
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <unistd.h>
-#include <ctype.h>
+
+// Import main headers
 #include "./main.h"
 
 int global_counter = 0;
