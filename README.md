@@ -1,2 +1,3 @@
-# item-count-capture
-Uma aplicação que realizar a contagem e pesagem de itens em esteiras. 
+# Item Count Capture
+
+Uma aplicação que realizar a contagem e pesagem de itens em esteiras.
