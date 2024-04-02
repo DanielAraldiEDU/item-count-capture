@@ -28,16 +28,12 @@ void array_insert(double value)
 
 void array_total_weight_sum()
 {
-  pthread_mutex_lock(&count_mutex);
-
   double sum = 0;
   for (int index = 0; index < array_length; index++)
   {
     sum += array[index];
   }
   total_weight += sum;
-
-  pthread_mutex_unlock(&count_mutex);
 }
 
 void array_print()
