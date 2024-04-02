@@ -34,16 +34,19 @@ int main()
 
   printf("Server connected!\n");
 
-  // Read data from server
-  if (read(server, buffer, sizeof(buffer)) < 0)
+  while (1)
   {
-    perror("Read socket data failed!");
-    close(server);
-    return 1;
+    // Read data from server
+    if (read(server, buffer, sizeof(buffer)) < 0)
+    {
+      perror("Read socket data failed!");
+      close(server);
+      return 1;
+    }
+
+    printf("Received data: %s\n", buffer);
   }
-
-  printf("Received data: %s\n", buffer);
-
+  
   // Close socket and exit
   close(server);
 

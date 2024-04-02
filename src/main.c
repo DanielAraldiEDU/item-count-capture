@@ -127,7 +127,7 @@ void *send_data_to_display(void *param) {
   }
 
   printf("Named pipe server listening in %s...\n", SOCKET_PATH);
-
+  
   // Accept connections
   memset(&remote, 0, sizeof(remote));
   length = sizeof(remote);
@@ -141,17 +141,18 @@ void *send_data_to_display(void *param) {
 
   printf("Client connected!\n");
 
-  sprintf(buffer, "%d", array_length);
-  if (write(client, buffer, strlen(buffer) + 1) < 0)
+  while (1)
   {
-    perror("Write socket failed!");
-    close(client);
-    close(server);
-    return 0;
+    sprintf(buffer, "%d", array_length);
+    if (write(client, buffer, strlen(buffer) + 1) < 0)
+    {
+      perror("Write socket failed!");
+      close(client);
+      close(server);
+      return 0;
+    }
   }
-
-  printf("Data sent to back to the display.\n");
-
+  
   // Close sockets and exit
   close(client);
   close(server);
