@@ -1,5 +1,8 @@
 #define SOCKET_PATH "/tmp/pipeso"
 
+// This value is used to determine a boolean value (0 - false and 1 - true)
+int is_weight_summed = 0;
+
 int global_counter = 0;
 int array_length = 0;
 double array[1500];

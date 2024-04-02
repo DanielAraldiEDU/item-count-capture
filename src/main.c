@@ -46,18 +46,22 @@ void *conveyor_belt_to_bigger_weight(void *param)
 {
   while (1)
   {
+    // sleep for 1 second.
+    // usleep(1000000);
+
     pthread_mutex_lock(&count_mutex);
-    if (global_counter != 0 && global_counter % 1500 == 0)
+    if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
     {
+      is_weight_summed = 1;
       array_total_weight_sum();
+
       pthread_mutex_unlock(&count_mutex);
       continue;
     }
 
-    // sleep for 1 second.
-    // usleep(1000000);
-    global_counter++;
+    is_weight_summed = 0;
     array_insert(5);
+    global_counter++;
 
     pthread_mutex_unlock(&count_mutex);
   }
@@ -69,18 +73,22 @@ void *conveyor_belt_to_medium_weight(void *param)
 {
   while (1)
   {
+    // sleep for 0.5 seconds.
+    // usleep(500000);
+
     pthread_mutex_lock(&count_mutex);
-    if (global_counter != 0 && global_counter % 1500 == 0)
+    if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
     {
+      is_weight_summed = 1;
       array_total_weight_sum();
+
       pthread_mutex_unlock(&count_mutex);
       continue;
     }
 
-    // sleep for 0.5 seconds.
-    // usleep(500000);
-    global_counter++;
+    is_weight_summed = 0;
     array_insert(2);
+    global_counter++;
 
     pthread_mutex_unlock(&count_mutex);
   }
@@ -92,18 +100,22 @@ void *conveyor_belt_to_smaller_weight(void *param)
 {
   while (1)
   {
+    // sleep for 0.1 seconds.
+    // usleep(100000);
+
     pthread_mutex_lock(&count_mutex);
-    if (global_counter != 0 && global_counter % 1500 == 0)
+    if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
     {
+      is_weight_summed = 1;
       array_total_weight_sum();
+
       pthread_mutex_unlock(&count_mutex);
       continue;
     }
 
-    // sleep for 0.1 seconds.
-    // usleep(100000);
-    global_counter++;
+    is_weight_summed = 0;
     array_insert(0.5);
+    global_counter++;
 
     pthread_mutex_unlock(&count_mutex);
   }
@@ -158,7 +170,7 @@ void *send_data_to_display(void *param)
     return 0;
   }
 
-  printf("Client connected!\n");
+  printf("Display connected!\n");
 
   while (1)
   {

@@ -32,7 +32,7 @@ int main()
     return 1;
   }
 
-  printf("Server connected!\n");
+  printf("Main server connected!\n");
 
   while (1)
   {
