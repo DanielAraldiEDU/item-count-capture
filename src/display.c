@@ -44,7 +44,7 @@ int main()
       return 1;
     }
 
-    printf("Received data: %s\n", buffer);
+    printf("%s\n", buffer);
   }
   
   // Close socket and exit

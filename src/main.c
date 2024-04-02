@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <signal.h>
 
 // Pipe - Socket
 #include <sys/types.h>
@@ -17,11 +18,13 @@ pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 
 void array_insert(double value)
 {
-  if (array_counter % 1500 == 0) array_length = 0;
+  if (global_counter % 1500 == 0) {
+    array_length = 0;
+
+  }
   
   array[array_length] = value;
   array_length++;
-  array_counter++;
 }
 
 void array_print()
@@ -34,8 +37,9 @@ void *conveyor_belt_to_bigger_weight(void *param)
 {
   while (1)
   {
+    printf("global_counter: %d\n", global_counter);
     pthread_mutex_lock(&count_mutex);
-    if (global_counter == 1500) {
+    if (global_counter % 1500 == 0) {
       pthread_mutex_unlock(&count_mutex);
       break;
     }
@@ -56,7 +60,7 @@ void *conveyor_belt_to_medium_weight(void *param)
   while (1)
   {
     pthread_mutex_lock(&count_mutex);
-    if (global_counter == 1500) {
+    if (global_counter % 1500 == 0) {
       pthread_mutex_unlock(&count_mutex);
       break;
     }
@@ -77,7 +81,7 @@ void *conveyor_belt_to_smaller_weight(void *param)
   while (1)
   {
     pthread_mutex_lock(&count_mutex);
-    if (global_counter == 1500) {
+    if (global_counter % 1500 == 0) {
       pthread_mutex_unlock(&count_mutex);
       break;
     }
@@ -143,7 +147,8 @@ void *send_data_to_display(void *param) {
 
   while (1)
   {
-    sprintf(buffer, "%d", array_length);
+    usleep(2000000);
+    sprintf(buffer, "Quantidade de produtos: %d\nPeso total: %f\n", global_counter, total_weight);
     if (write(client, buffer, strlen(buffer) + 1) < 0)
     {
       perror("Write socket failed!");
@@ -158,8 +163,18 @@ void *send_data_to_display(void *param) {
   close(server);
 }
 
+void stop_conveyor_belts()
+{
+  printf("Stopping conveyor belt...\n");
+  int mutex_status = pthread_mutex_trylock(&count_mutex);
+  if (mutex_status < 0) {
+    pthread_mutex_unlock(&count_mutex);
+  }
+}
+
 int main()
 {
+  signal(SIGINT, stop_conveyor_belts);
   pthread_t tid_smaller, tid_medium, tid_bigger, tid_display;
   pthread_attr_t attr;
 
