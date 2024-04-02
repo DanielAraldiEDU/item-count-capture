@@ -174,14 +174,17 @@ void *send_data_to_display(void *param)
 
   while (1)
   {
-    usleep(2000000);
-    sprintf(buffer, "Quantidade de produtos: %d\nPeso total: %f\n", global_counter, total_weight);
-    if (write(client, buffer, strlen(buffer) + 1) < 0)
+    if (!is_stopped)
     {
-      perror("Write socket failed!");
-      close(client);
-      close(server);
-      return 0;
+      usleep(2000000);
+      sprintf(buffer, "Amount of products: %d\nTotal weight: %f\n", global_counter, total_weight);
+      if (write(client, buffer, strlen(buffer) + 1) < 0)
+      {
+        perror("Write socket failed!");
+        close(client);
+        close(server);
+        return 0;
+      }
     }
   }
 
@@ -192,10 +195,15 @@ void *send_data_to_display(void *param)
 
 void stop_conveyor_belts()
 {
-  printf("Stopping conveyor belt...\n");
-  int mutex_status = pthread_mutex_trylock(&count_mutex);
-  if (mutex_status < 0)
+  is_stopped = !is_stopped;
+  if (is_stopped)
   {
+    printf("\nConveyor belt stopping!");
+    pthread_mutex_lock(&count_mutex);
+  }
+  else
+  {
+    printf("\nConveyor belt working!");
     pthread_mutex_unlock(&count_mutex);
   }
 }
@@ -203,6 +211,7 @@ void stop_conveyor_belts()
 int main()
 {
   signal(SIGINT, stop_conveyor_belts);
+
   pthread_t tid_smaller, tid_medium, tid_bigger, tid_display;
   pthread_attr_t attr;
 
