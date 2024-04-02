@@ -47,7 +47,7 @@ void *conveyor_belt_to_bigger_weight(void *param)
   while (1)
   {
     // sleep for 1 second.
-    // usleep(1000000);
+    usleep(1000000);
 
     pthread_mutex_lock(&count_mutex);
     if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
@@ -74,7 +74,7 @@ void *conveyor_belt_to_medium_weight(void *param)
   while (1)
   {
     // sleep for 0.5 seconds.
-    // usleep(500000);
+    usleep(500000);
 
     pthread_mutex_lock(&count_mutex);
     if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
@@ -101,7 +101,7 @@ void *conveyor_belt_to_smaller_weight(void *param)
   while (1)
   {
     // sleep for 0.1 seconds.
-    // usleep(100000);
+    usleep(100000);
 
     pthread_mutex_lock(&count_mutex);
     if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
@@ -198,12 +198,12 @@ void stop_conveyor_belts()
   is_stopped = !is_stopped;
   if (is_stopped)
   {
-    printf("\nConveyor belt stopping!");
+    fprintf(stderr, "\nConveyor belt stopping!\n");
     pthread_mutex_lock(&count_mutex);
   }
   else
   {
-    printf("\nConveyor belt working!");
+    fprintf(stderr, "\nConveyor belt working!\n");
     pthread_mutex_unlock(&count_mutex);
   }
 }
