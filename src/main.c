@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
+
 // Pipe - Socket
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -14,66 +15,35 @@ int global_counter = 0;
 pthread_mutex_t count_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 
-struct List list = {0, 0, NULL, NULL};
-
-void list_delete()
+void array_insert(double value)
 {
-  struct Node *current_node = list.start;
-  struct Node *next_node;
-
-  while (current_node != NULL)
-  {
-    next_node = current_node->next;
-    free(current_node);
-    current_node = next_node;
-  }
+  if (array_counter % 1500 == 0) array_length = 0;
+  
+  array[array_length] = value;
+  array_length++;
+  array_counter++;
 }
 
-void list_insert(double value)
+void array_print()
 {
-  list.length += 1;
-  list.total_weight += value;
-
-  struct Node *new_node = (struct Node *)malloc(sizeof(struct Node));
-  new_node->value = value;
-  new_node->next = NULL;
-
-  if (list.end == NULL)
-  {
-    list.start = new_node;
-    list.end = new_node;
-  }
-  else
-  {
-    list.end->next = new_node;
-    list.end = new_node;
-  }
-
-  printf("length:%d\n", list.length);
-}
-
-void list_print()
-{
-  struct Node *current_node = list.start;
-  while (current_node != NULL)
-  {
-    printf("%f\n", current_node->value);
-    current_node = current_node->next;
-  }
+  for (int index = 0; index < array_length; index++) 
+    printf("%f\n", array[index]);
 }
 
 void *conveyor_belt_to_bigger_weight(void *param)
 {
   while (1)
   {
-    if (global_counter >= 1500)
-      break;
     pthread_mutex_lock(&count_mutex);
+    if (global_counter == 1500) {
+      pthread_mutex_unlock(&count_mutex);
+      break;
+    }
 
     // sleep for 1 second.
     // usleep(1000000);
     global_counter++;
-    list_insert(5);
+    array_insert(5);
 
     pthread_mutex_unlock(&count_mutex);
   }
@@ -85,13 +55,16 @@ void *conveyor_belt_to_medium_weight(void *param)
 {
   while (1)
   {
-    if (global_counter >= 1500)
-      break;
     pthread_mutex_lock(&count_mutex);
+    if (global_counter == 1500) {
+      pthread_mutex_unlock(&count_mutex);
+      break;
+    }
+
     // sleep for 0.5 seconds.
     // usleep(500000);
     global_counter++;
-    list_insert(2);
+    array_insert(2);
 
     pthread_mutex_unlock(&count_mutex);
   }
@@ -103,13 +76,16 @@ void *conveyor_belt_to_smaller_weight(void *param)
 {
   while (1)
   {
-    if (global_counter >= 1500)
-      break;
     pthread_mutex_lock(&count_mutex);
+    if (global_counter == 1500) {
+      pthread_mutex_unlock(&count_mutex);
+      break;
+    }
+
     // sleep for 0.1 seconds.
     // usleep(100000);
     global_counter++;
-    list_insert(0.5);
+    array_insert(0.5);
 
     pthread_mutex_unlock(&count_mutex);
   }
@@ -117,8 +93,7 @@ void *conveyor_belt_to_smaller_weight(void *param)
   pthread_exit(0);
 }
 
-int main()
-{
+void *send_data_to_display(void *param) {
   int server, client, length;
   struct sockaddr_un local, remote;
   char buffer[1024];
@@ -166,16 +141,7 @@ int main()
 
   printf("Client connected!\n");
 
-  if (read(client, buffer, sizeof(buffer)) < 0)
-  {
-    perror("Read socket failed!");
-    close(client);
-    close(server);
-    return 0;
-  }
-
-  printf("Received data: %s\n", buffer);
-
+  sprintf(buffer, "%d", array_length);
   if (write(client, buffer, strlen(buffer) + 1) < 0)
   {
     perror("Write socket failed!");
@@ -184,13 +150,16 @@ int main()
     return 0;
   }
 
-  printf("Data sent to back to the client.\n");
+  printf("Data sent to back to the display.\n");
 
   // Close sockets and exit
   close(client);
   close(server);
+}
 
-  pthread_t tid_smaller, tid_medium, tid_bigger;
+int main()
+{
+  pthread_t tid_smaller, tid_medium, tid_bigger, tid_display;
   pthread_attr_t attr;
 
   pthread_attr_init(&attr);
@@ -198,12 +167,12 @@ int main()
   pthread_create(&tid_smaller, &attr, conveyor_belt_to_smaller_weight, NULL);
   pthread_create(&tid_medium, &attr, conveyor_belt_to_medium_weight, NULL);
   pthread_create(&tid_bigger, &attr, conveyor_belt_to_bigger_weight, NULL);
+  pthread_create(&tid_display, &attr, send_data_to_display, NULL);
 
   pthread_join(tid_smaller, NULL);
   pthread_join(tid_medium, NULL);
   pthread_join(tid_bigger, NULL);
-
-  list_delete();
+  pthread_join(tid_display, NULL);
 
   return 0;
 }

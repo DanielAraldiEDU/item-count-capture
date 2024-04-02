@@ -34,18 +34,6 @@ int main()
 
   printf("Server connected!\n");
 
-  // Send data to server
-  printf("Enter data to be sent: ");
-  fgets(buffer, sizeof(buffer), stdin);
-  if (write(server, buffer, strlen(buffer) + 1) < 0)
-  {
-    perror("Write socket failed!");
-    close(server);
-    return 1;
-  }
-
-  printf("Data sent from server.\n");
-
   // Read data from server
   if (read(server, buffer, sizeof(buffer)) < 0)
   {
