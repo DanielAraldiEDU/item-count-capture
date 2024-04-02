@@ -46,7 +46,7 @@ int main()
 
     printf("%s\n", buffer);
   }
-  
+
   // Close socket and exit
   close(server);
 

@@ -12,24 +12,37 @@
 // Import main headers
 #include "./main.h"
 
-int global_counter = 0;
 pthread_mutex_t count_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 
 void array_insert(double value)
 {
-  if (global_counter % 1500 == 0) {
+  if (global_counter % 1500 == 0)
+  {
     array_length = 0;
-
   }
-  
+
   array[array_length] = value;
   array_length++;
 }
 
+void array_total_weight_sum()
+{
+  pthread_mutex_lock(&count_mutex);
+
+  double sum = 0;
+  for (int index = 0; index < array_length; index++)
+  {
+    sum += array[index];
+  }
+  total_weight += sum;
+
+  pthread_mutex_unlock(&count_mutex);
+}
+
 void array_print()
 {
-  for (int index = 0; index < array_length; index++) 
+  for (int index = 0; index < array_length; index++)
     printf("%f\n", array[index]);
 }
 
@@ -37,11 +50,12 @@ void *conveyor_belt_to_bigger_weight(void *param)
 {
   while (1)
   {
-    printf("global_counter: %d\n", global_counter);
     pthread_mutex_lock(&count_mutex);
-    if (global_counter % 1500 == 0) {
+    if (global_counter != 0 && global_counter % 1500 == 0)
+    {
+      array_total_weight_sum();
       pthread_mutex_unlock(&count_mutex);
-      break;
+      continue;
     }
 
     // sleep for 1 second.
@@ -60,9 +74,11 @@ void *conveyor_belt_to_medium_weight(void *param)
   while (1)
   {
     pthread_mutex_lock(&count_mutex);
-    if (global_counter % 1500 == 0) {
+    if (global_counter != 0 && global_counter % 1500 == 0)
+    {
+      array_total_weight_sum();
       pthread_mutex_unlock(&count_mutex);
-      break;
+      continue;
     }
 
     // sleep for 0.5 seconds.
@@ -81,9 +97,11 @@ void *conveyor_belt_to_smaller_weight(void *param)
   while (1)
   {
     pthread_mutex_lock(&count_mutex);
-    if (global_counter % 1500 == 0) {
+    if (global_counter != 0 && global_counter % 1500 == 0)
+    {
+      array_total_weight_sum();
       pthread_mutex_unlock(&count_mutex);
-      break;
+      continue;
     }
 
     // sleep for 0.1 seconds.
@@ -97,7 +115,8 @@ void *conveyor_belt_to_smaller_weight(void *param)
   pthread_exit(0);
 }
 
-void *send_data_to_display(void *param) {
+void *send_data_to_display(void *param)
+{
   int server, client, length;
   struct sockaddr_un local, remote;
   char buffer[1024];
@@ -131,7 +150,7 @@ void *send_data_to_display(void *param) {
   }
 
   printf("Named pipe server listening in %s...\n", SOCKET_PATH);
-  
+
   // Accept connections
   memset(&remote, 0, sizeof(remote));
   length = sizeof(remote);
@@ -157,7 +176,7 @@ void *send_data_to_display(void *param) {
       return 0;
     }
   }
-  
+
   // Close sockets and exit
   close(client);
   close(server);
@@ -167,7 +186,8 @@ void stop_conveyor_belts()
 {
   printf("Stopping conveyor belt...\n");
   int mutex_status = pthread_mutex_trylock(&count_mutex);
-  if (mutex_status < 0) {
+  if (mutex_status < 0)
+  {
     pthread_mutex_unlock(&count_mutex);
   }
 }
@@ -180,15 +200,15 @@ int main()
 
   pthread_attr_init(&attr);
 
+  pthread_create(&tid_display, &attr, send_data_to_display, NULL);
   pthread_create(&tid_smaller, &attr, conveyor_belt_to_smaller_weight, NULL);
   pthread_create(&tid_medium, &attr, conveyor_belt_to_medium_weight, NULL);
   pthread_create(&tid_bigger, &attr, conveyor_belt_to_bigger_weight, NULL);
-  pthread_create(&tid_display, &attr, send_data_to_display, NULL);
 
+  pthread_join(tid_display, NULL);
   pthread_join(tid_smaller, NULL);
   pthread_join(tid_medium, NULL);
   pthread_join(tid_bigger, NULL);
-  pthread_join(tid_display, NULL);
 
   return 0;
 }
