@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+// Pipe - Socket
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <unistd.h>
+
+// Import display headers
 #include "display.h"
 
 int main()
