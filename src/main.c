@@ -46,24 +46,21 @@ void conveyor_belt_to_bigger_weight()
     // sleep for 1 second.
     usleep(1000000);
 
-#pragma omp critical
+    omp_set_lock(&lock);
+
+    if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
     {
-      omp_set_lock(&lock);
-
-      if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
-      {
-        is_weight_summed = 1;
-        array_total_weight_sum();
-      }
-      else
-      {
-        is_weight_summed = 0;
-        array_insert(5);
-        global_counter++;
-      }
-
-      omp_unset_lock(&lock);
+      is_weight_summed = 1;
+      array_total_weight_sum();
     }
+    else
+    {
+      is_weight_summed = 0;
+      array_insert(5);
+      global_counter++;
+    }
+
+    omp_unset_lock(&lock);
   }
 
   omp_destroy_lock(&lock);
@@ -76,24 +73,21 @@ void conveyor_belt_to_medium_weight()
     // sleep for 0.5 seconds.
     usleep(500000);
 
-#pragma omp critical
+    omp_set_lock(&lock);
+
+    if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
     {
-      omp_set_lock(&lock);
-
-      if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
-      {
-        is_weight_summed = 1;
-        array_total_weight_sum();
-      }
-      else
-      {
-        is_weight_summed = 0;
-        array_insert(2);
-        global_counter++;
-      }
-
-      omp_unset_lock(&lock);
+      is_weight_summed = 1;
+      array_total_weight_sum();
     }
+    else
+    {
+      is_weight_summed = 0;
+      array_insert(2);
+      global_counter++;
+    }
+
+    omp_unset_lock(&lock);
   }
 
   omp_destroy_lock(&lock);
@@ -106,24 +100,21 @@ void conveyor_belt_to_smaller_weight()
     // sleep for 0.1 seconds.
     usleep(100000);
 
-#pragma omp critical
+    omp_set_lock(&lock);
+
+    if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
     {
-      omp_set_lock(&lock);
-
-      if (!is_weight_summed && global_counter != 0 && global_counter % 1500 == 0)
-      {
-        is_weight_summed = 1;
-        array_total_weight_sum();
-      }
-      else
-      {
-        is_weight_summed = 0;
-        array_insert(0.5);
-        global_counter++;
-      }
-
-      omp_unset_lock(&lock);
+      is_weight_summed = 1;
+      array_total_weight_sum();
     }
+    else
+    {
+      is_weight_summed = 0;
+      array_insert(0.5);
+      global_counter++;
+    }
+
+    omp_unset_lock(&lock);
   }
 
   omp_destroy_lock(&lock);
@@ -243,6 +234,8 @@ int main()
       }
     }
   }
+
+  omp_destroy_lock(&lock);
 
   return 0;
 }
