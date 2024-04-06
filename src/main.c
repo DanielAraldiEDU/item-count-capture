@@ -62,8 +62,6 @@ void conveyor_belt_to_bigger_weight()
 
     omp_unset_lock(&lock);
   }
-
-  omp_destroy_lock(&lock);
 }
 
 void conveyor_belt_to_medium_weight()
@@ -89,8 +87,6 @@ void conveyor_belt_to_medium_weight()
 
     omp_unset_lock(&lock);
   }
-
-  omp_destroy_lock(&lock);
 }
 
 void conveyor_belt_to_smaller_weight()
@@ -116,8 +112,6 @@ void conveyor_belt_to_smaller_weight()
 
     omp_unset_lock(&lock);
   }
-
-  omp_destroy_lock(&lock);
 }
 
 void send_data_to_display()
