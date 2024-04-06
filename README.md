@@ -53,7 +53,7 @@ A utilização da biblioteca OpenMP para contagem do peso total usando o vetor d
 Rodar o seguinte comando no terminal:
 
 ```bash
-cd src && gcc -o main.exe main.c -lpthread -lrt && gcc -o display.exe display.c -lpthread -lrt
+cd src && gcc -o main.exe main.c -lpthread -lrt -fopenmp && gcc -o display.exe display.c -lpthread -lrt
 ```
 
 ### Colaboradores
