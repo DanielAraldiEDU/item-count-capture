@@ -4,6 +4,9 @@
 #include <unistd.h>
 #include <signal.h>
 
+// OpenMP
+#include <omp.h>
+
 // Pipe - Socket
 #include <sys/types.h>
 #include <sys/socket.h>
