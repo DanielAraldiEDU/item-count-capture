@@ -10,7 +10,6 @@ double array[1500];
 double total_weight = 0;
 
 void array_insert(double value);
-void array_print();
 void array_total_weight_sum();
 
 void *conveyor_belt_to_bigger_weight(void *param);

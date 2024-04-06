@@ -39,12 +39,6 @@ void array_total_weight_sum()
   total_weight += sum;
 }
 
-void array_print()
-{
-  for (int index = 0; index < array_length; index++)
-    printf("%f\n", array[index]);
-}
-
 void *conveyor_belt_to_bigger_weight(void *param)
 {
   while (1)
