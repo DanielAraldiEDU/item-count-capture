@@ -16,6 +16,7 @@
 // Import main headers
 #include "./main.h"
 
+struct sockaddr_un local, remote;
 omp_lock_t lock;
 
 void array_insert(double value)
@@ -27,6 +28,7 @@ void array_insert(double value)
 
   array[array_length] = value;
   array_length++;
+  global_counter++;
 }
 
 void array_total_weight_sum()
@@ -57,7 +59,6 @@ void conveyor_belt_to_bigger_weight()
     {
       is_weight_summed = 0;
       array_insert(5);
-      global_counter++;
     }
 
     omp_unset_lock(&lock);
@@ -82,7 +83,6 @@ void conveyor_belt_to_medium_weight()
     {
       is_weight_summed = 0;
       array_insert(2);
-      global_counter++;
     }
 
     omp_unset_lock(&lock);
@@ -107,19 +107,14 @@ void conveyor_belt_to_smaller_weight()
     {
       is_weight_summed = 0;
       array_insert(0.5);
-      global_counter++;
     }
 
     omp_unset_lock(&lock);
   }
 }
 
-void send_data_to_display()
+void create_pipe_connection()
 {
-  int server, client, length;
-  struct sockaddr_un local, remote;
-  char buffer[1024];
-
   // Create socket
   server = socket(AF_UNIX, SOCK_STREAM, 0);
   if (server < 0)
@@ -162,7 +157,10 @@ void send_data_to_display()
   }
 
   printf("Display connected!\n");
+}
 
+void send_data_to_display()
+{
   while (1)
   {
     if (!is_stopped)
@@ -205,6 +203,8 @@ int main()
   signal(SIGINT, stop_conveyor_belts);
 
   omp_init_lock(&lock);
+
+  create_pipe_connection();
 
 #pragma omp parallel shared(global_counter, total_weight, array, array_length, is_weight_summed, is_stopped)
   {
