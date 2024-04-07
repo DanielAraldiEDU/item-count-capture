@@ -17,5 +17,6 @@ void array_total_weight_sum();
 void conveyor_belt_to_bigger_weight();
 void conveyor_belt_to_medium_weight();
 void conveyor_belt_to_smaller_weight();
+void stop_conveyor_belts();
 void create_pipe_connection();
 void send_data_to_display();
