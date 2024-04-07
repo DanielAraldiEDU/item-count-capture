@@ -206,23 +206,23 @@ int main()
 
   create_pipe_connection();
 
-#pragma omp parallel shared(global_counter, total_weight, array, array_length, is_weight_summed, is_stopped)
+  #pragma omp parallel shared(global_counter, total_weight, array, array_length, is_weight_summed, is_stopped)
   {
-#pragma omp sections nowait
+    #pragma omp sections nowait
     {
-#pragma omp section
+      #pragma omp section
       {
         conveyor_belt_to_bigger_weight();
       }
-#pragma omp section
+      #pragma omp section
       {
         conveyor_belt_to_medium_weight();
       }
-#pragma omp section
+      #pragma omp section
       {
         conveyor_belt_to_smaller_weight();
       }
-#pragma omp section
+      #pragma omp section
       {
         send_data_to_display();
       }
