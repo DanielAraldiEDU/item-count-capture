@@ -50,10 +50,22 @@ A utilização da biblioteca OpenMP para contagem do peso total usando o vetor d
 
 ### Como executar?
 
-Rodar o seguinte comando no terminal:
+Rodar o seguinte comando no terminal para gerar os executáveis dentro da pasta `./src` do projeto:
 
 ```bash
 cd src && bash ./.bash_profile && gcc -o main.exe main.c -fopenmp && gcc -o display.exe display.c
+```
+
+Em seguida abra dois terminais na pasta `./src` e execute os arquivos executáveis passando o seu caminho e nome:
+
+```bash
+## ./src - terminal 1
+./main.exe
+```
+
+```bash
+## ./src - terminal 2
+./display.exe
 ```
 
 ### Colaboradores
